@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>2 Player Car Game</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: #333;
+    }
+    canvas {
+        display: block;
+        margin: auto;
+        background: url('https://i.imgur.com/ZR3dE6P.png') repeat-y center top / cover;
+    }
+    #controls {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 20px;
+    }
+    button {
+        padding: 10px 20px;
+        font-size: 18px;
+        border: none;
+        background: #ff9800;
+        color: white;
+        border-radius: 5px;
+    }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="400" height="600"></canvas>
+<div id="controls">
+    <div>
+        <button onclick="moveCar1Left()">P1 Left</button>
+        <button onclick="moveCar1Right()">P1 Right</button>
+    </div>
+    <div>
+        <button onclick="moveCar2Left()">P2 Left</button>
+        <button onclick="moveCar2Right()">P2 Right</button>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Load car images
+const redCar = new Image();
+redCar.src = "https://i.imgur.com/H3Z8x0G.png";
+const blueCar = new Image();
+blueCar.src = "https://i.imgur.com/bf2iEVf.png";
+
+const laneX = [70, 170, 270]; // 3 lanes
+
+let car1 = { x: laneX[0], y: 500, lane: 0 };
+let car2 = { x: laneX[2], y: 100, lane: 2 };
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "a") moveCar1Left();
+    if (e.key === "d") moveCar1Right();
+    if (e.key === "ArrowLeft") moveCar2Left();
+    if (e.key === "ArrowRight") moveCar2Right();
+});
+
+function moveCar1Left() { if (car1.lane > 0) car1.lane--; car1.x = laneX[car1.lane]; }
+function moveCar1Right() { if (car1.lane < 2) car1.lane++; car1.x = laneX[car1.lane]; }
+function moveCar2Left() { if (car2.lane > 0) car2.lane--; car2.x = laneX[car2.lane]; }
+function moveCar2Right() { if (car2.lane < 2) car2.lane++; car2.x = laneX[car2.lane]; }
+
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw cars
+    ctx.drawImage(redCar, car1.x, car1.y, 50, 100);
+    ctx.drawImage(blueCar, car2.x, car2.y, 50, 100);
+
+    // Collision check
+    if (car1.lane === car2.lane && Math.abs(car1.y - car2.y) < 100) {
+        alert("Game Over! Cars collided!");
+        car1 = { x: laneX[0], y: 500, lane: 0 };
+        car2 = { x: laneX[2], y: 100, lane: 2 };
+    }
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+</body>
+</html>
